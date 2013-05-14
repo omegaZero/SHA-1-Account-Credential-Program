@@ -1,0 +1,3 @@
+This is just a little project to play around with usernames and password hashes.
+
+Right now it only has the ability to recognize new users and display the hash of their desired password. Complete functionality should include being able to authenticate users on file and to add new users too.
