@@ -3,3 +3,5 @@ This is just a little project to play around with usernames and password hashes.
 Right now it only has the ability to recognize new users and display the hash of their desired password. Complete functionality should include being able to authenticate users on file and to add new users as well. It's currently a little messy, but that'll get worked out when I have more time.
 
 In order to build this you'll need the libssl-dev package and will need to compile using the -lssl -lcrypto flags
+
+Update: Writing and reading new users to and from a user file now works, reading a hash from a file is having some problems though.
