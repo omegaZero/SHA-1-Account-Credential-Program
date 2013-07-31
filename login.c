@@ -5,6 +5,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <openssl/sha.h>
 
 #include "auth.h"
@@ -14,9 +15,10 @@ int main()
    User **userList;     /* Pointer to array of User *'s */
    int userFD;          /* File Descriptor for persistent file */
    int numUsers = 0;    /* number of registered users */
+   char userBuffer[MAX_NAME_LENGTH];
 
    if (!fileExists()) {
-      printf("Creating persistent file...\n");
+      printf("Creating persistent file...\n\n");
 
       userFD = open(PERSIST_FILE, O_CREAT | O_WRONLY,
          S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
@@ -30,4 +32,7 @@ int main()
 
    printf(PROMPT);
    printf("Please enter your account name: ");
+   fgets(userBuffer, MAX_NAME_LENGTH, stdin);
+   unNewLine(userBuffer);
+   printf("User: %s\n", userBuffer);
 }

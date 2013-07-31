@@ -11,6 +11,8 @@
 #define PROMPT "\tThis program demonstrates account authentication through\n\
 \tmaintaining hashes of passwords\n\n"
 
+#define unNewLine(n) ((n)[strlen(n) - 1] = 0)
+
 typedef struct {
    char *name;          /* Username String */
    unsigned char *hash; /* SHA-1 hash of password */
