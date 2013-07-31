@@ -16,15 +16,18 @@ int main()
    int numUsers = 0;    /* number of registered users */
 
    if (!fileExists()) {
-      printf("Creating persistent file...");
+      printf("Creating persistent file...\n");
+
       userFD = open(PERSIST_FILE, O_CREAT | O_WRONLY,
          S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
       write(userFD, &numUsers, 1);
-      printf("\n");
    }
    else {
       userFD = open(PERSIST_FILE, O_RDONLY);
       read(userFD, &numUsers, 1);
       printf("DEBUG: Num Users: %d\n", numUsers);
    }
+
+   printf(PROMPT);
+   printf("Please enter your account name: ");
 }

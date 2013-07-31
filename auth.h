@@ -8,6 +8,8 @@
 #define MAX_USERS 16
 
 #define PERSIST_FILE ".userdata\0"
+#define PROMPT "\tThis program demonstrates account authentication through\n\
+\tmaintaining hashes of passwords\n\n"
 
 typedef struct {
    char *name;          /* Username String */
