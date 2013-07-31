@@ -1,5 +1,5 @@
 all:
-	gcc passwordSha1.c -lssl -lcrypto -o SHAauth
+	gcc auth.c login.c -lssl -lcrypto -o login
 
 clean:
-	rm SHAauth *.a *.o
+	rm login *.a *.o
