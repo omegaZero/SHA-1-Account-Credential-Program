@@ -27,3 +27,5 @@ This branch will house all of the new changes, until I feel ready to merge it ba
 ```shell
    ./login
 ```
+You're gonna need that './' or else you'll be running your /bin/login
+(I know, it's a terrible name for an executable, I'll change it when I think of something better)
