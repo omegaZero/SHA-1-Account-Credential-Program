@@ -25,5 +25,5 @@ This branch will house all of the new changes, until I feel ready to merge it ba
 
 ### Usage
 ```shell
-   ./SHAauth
+   ./login
 ```
