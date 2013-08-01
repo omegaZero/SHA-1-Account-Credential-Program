@@ -1,3 +1,9 @@
+/* SHA-1-Authentication
+ * auth.h
+ *
+ * Chris Opperwall July 28, 2013
+ */
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>

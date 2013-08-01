@@ -1,3 +1,9 @@
+/* SHA-1-Authentication
+ * auth.c
+ *
+ * Chris Opperwall July 28, 2013
+ */
+
 #include <openssl/sha.h>
 
 #include "auth.h"
