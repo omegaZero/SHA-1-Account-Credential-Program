@@ -6,8 +6,7 @@
 
 #include "auth.h"
 
-int main()
-{
+int main() {
    User **userList;                  /* Pointer to array of User *'s */
    int userFD;                       /* File Descriptor for persistent file */
    int numUsers = 0;                 /* number of registered users */
@@ -24,8 +23,9 @@ int main()
       userFD = open(PERSIST_FILE, O_RDONLY);
       read(userFD, &numUsers, 1);
       printf("DEBUG: Num Users: %d\n", numUsers);
+      userListInit(userList, numUsers, userFD);
    }
 
    printf(WELCOME);
-   handleUser(userList);
+   handleUser(userList, numUsers);
 }

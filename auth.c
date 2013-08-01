@@ -2,17 +2,34 @@
 
 #include "auth.h"
 
-int fileExists() {
-   if (open(PERSIST_FILE, O_RDONLY) == -1)
-      return 0;
-   return 1;
+/* Sets up list of users from opened file descriptor, looks for
+ * the number of users stated at the beginning of the file
+ */
+void userListInit(User **list, int numUsers, int userFD) {
+   
 }
 
-void handleUser(User **list) {
+void handleUser(User **list, int numUsers) {
    char nameBuffer[MAX_NAME_LENGTH];
+   int ndx = 0;
 
    printf("Please enter your account name: ");
    fgets(nameBuffer, MAX_NAME_LENGTH, stdin);
    unNewLine(nameBuffer);
    printf("User: %s\n", nameBuffer);
+   if (findUser(nameBuffer, list, numUsers))
+      printf("Prompt for password now\n"); // Filler
+   else
+      printf("No user, prompt for creation\n"); // Filler
+}
+
+int findUser(const char *name, User **list, int numUsers) {
+   int ndx = 0;
+ 
+   //printf("Do not pass go, do not collect 200 dollars\n");  
+   while (ndx < numUsers)
+      if (strcmp(list[ndx++]->name, name))
+         return 1;
+
+   return 0;
 }
