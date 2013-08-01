@@ -4,10 +4,6 @@
  * Chris Opperwall July 28, 2013
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <openssl/sha.h>
-
 #include "auth.h"
 
 int main()
@@ -15,9 +11,8 @@ int main()
    User **userList;                  /* Pointer to array of User *'s */
    int userFD;                       /* File Descriptor for persistent file */
    int numUsers = 0;                 /* number of registered users */
-   char userBuffer[MAX_NAME_LENGTH]; /* Holds username input */
-   
 
+   // Perhaps this if/else block can be moved to auth.c
    if (!fileExists()) {
       printf("Creating persistent file...\n\n");
 
@@ -31,9 +26,6 @@ int main()
       printf("DEBUG: Num Users: %d\n", numUsers);
    }
 
-   printf(PROMPT);
-   printf("Please enter your account name: ");
-   fgets(userBuffer, MAX_NAME_LENGTH, stdin);
-   unNewLine(userBuffer);
-   printf("User: %s\n", userBuffer);
+   printf(WELCOME);
+   handleUser(userList);
 }
