@@ -12,10 +12,11 @@
 
 int main()
 {
-   User **userList;     /* Pointer to array of User *'s */
-   int userFD;          /* File Descriptor for persistent file */
-   int numUsers = 0;    /* number of registered users */
-   char userBuffer[MAX_NAME_LENGTH];
+   User **userList;                  /* Pointer to array of User *'s */
+   int userFD;                       /* File Descriptor for persistent file */
+   int numUsers = 0;                 /* number of registered users */
+   char userBuffer[MAX_NAME_LENGTH]; /* Holds username input */
+   
 
    if (!fileExists()) {
       printf("Creating persistent file...\n\n");
