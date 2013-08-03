@@ -8,12 +8,34 @@
 
 #include "auth.h"
 
+int fileSetup(User **list, int numUsers) {
+   int userFD;
+
+   if (!fileExists()) {
+      printf("Creating persistent file...\n\n");
+
+      userFD = open(PERSIST_FILE, O_CREAT | O_WRONLY,
+         S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+      
+      write(userFD, &numUsers, 1);
+   }
+   else {
+      userFD = open(PERSIST_FILE, O_RDONLY);
+      read(userFD, &numUsers, 1);
+      printf("DEBUG: Num Users: %d\n", numUsers);
+      /* Function call to a list init function should go here */
+   }
+
+   return userFD;
+}
+
 /* Sets up list of users from opened file descriptor, looks for
  * the number of users stated at the beginning of the file
  */
-void userListInit(User **list, int numUsers, int userFD) {
+
+/* void userListInit(User **list, int numUsers, int userFD) {
    
-}
+} */
 
 void handleUser(User **list, int numUsers) {
    char nameBuffer[MAX_NAME_LENGTH];

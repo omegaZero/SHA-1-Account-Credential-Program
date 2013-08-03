@@ -12,7 +12,7 @@ int main() {
    int numUsers = 0;                 /* number of registered users */
 
    // Perhaps this if/else block can be moved to auth.c
-   if (!fileExists()) {
+   /*if (!fileExists()) {
       printf("Creating persistent file...\n\n");
 
       userFD = open(PERSIST_FILE, O_CREAT | O_WRONLY,
@@ -24,7 +24,9 @@ int main() {
       read(userFD, &numUsers, 1);
       printf("DEBUG: Num Users: %d\n", numUsers);
       userListInit(userList, numUsers, userFD);
-   }
+   }*/
+
+   userFD = fileSetup(userList, numUsers);
 
    printf(WELCOME);
    handleUser(userList, numUsers);
