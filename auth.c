@@ -29,13 +29,16 @@ int fileSetup(User **list, int numUsers) {
    return userFD;
 }
 
+
+// TODO This is what is next on the board
 /* Sets up list of users from opened file descriptor, looks for
  * the number of users stated at the beginning of the file
+ * then returns the number of users scanned in
  */
 
-/* void userListInit(User **list, int numUsers, int userFD) {
+int userListInit(User **list, int numUsers, int userFD) {
    
-} */
+}
 
 void handleUser(User **list, int numUsers) {
    char nameBuffer[MAX_NAME_LENGTH];
