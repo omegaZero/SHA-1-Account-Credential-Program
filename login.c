@@ -11,7 +11,7 @@ int main() {
    int userFD;                    /* File Descriptor for persistent file */
    int numUsers = 0;              /* number of registered users */
 
-   userFD = fileSetup(userList, numUsers);
+   userFD = fileSetup(&userList, numUsers);
 
    printf(WELCOME);
    handleUser(userList, numUsers);

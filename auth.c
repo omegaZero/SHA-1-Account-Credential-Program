@@ -9,7 +9,7 @@
 
 #include "auth.h"
 
-int fileSetup(User **list, int numUsers) {
+int fileSetup(User ***list, int numUsers) {
    int userFD;
 
    if (!fileExists()) {
@@ -41,19 +41,22 @@ int fileSetup(User **list, int numUsers) {
  * then returns the number of users scanned in
  */
 
-int userListInit(User **list, int numUsers, int userFD) {
-   list = malloc(sizeof(User *) * numUsers);
+int userListInit(User ***list, int numUsers, int userFD) {
+   *list = malloc(sizeof(User *) * numUsers);
    User *userBuff;
    int ndx;
 
    for (ndx = 0; ndx < numUsers; ndx++) {
-      userBuff = list[ndx] = malloc(sizeof(User));
+      userBuff = (*list)[ndx] = malloc(sizeof(User));
 
       read(userFD, userBuff->name, MAX_NAME_LENGTH);
       userBuff->hash = malloc(SHA_DIGEST_LENGTH);
       read(userFD, userBuff->hash, SHA_DIGEST_LENGTH);
       read(userFD, &(userBuff->id), 1);
+      
    }
+
+   return ndx;    // This needs to be checked later
 }
 
 /* By this point, all registered users should have
@@ -83,10 +86,21 @@ void handleUser(User **list, int numUsers) {
 int findUser(const char *name, User **list, int numUsers) {
    int ndx = 0;
  
-   //printf("Do not pass go, do not collect 200 dollars\n");  
    while (ndx < numUsers)
-      if (strcmp(list[ndx++]->name, name))
+      if (!strcmp(list[ndx++]->name, name))
          return 1;
 
    return 0;
+}
+
+/* Begin Debugging Functions */
+
+void *debugAddUser(char *name, unsigned char* hash, int id) {
+   User *tempUser = malloc(sizeof(User));
+   
+   strcpy(tempUser->name, name);
+   tempUser->hash = hash;
+   tempUser->id = id;
+
+   return tempUser;
 }
