@@ -5,6 +5,7 @@
  */
 
 #include <openssl/sha.h>
+#include <stdlib.h>
 
 #include "auth.h"
 
@@ -24,6 +25,7 @@ int fileSetup(User **list, int numUsers) {
       read(userFD, &numUsers, 1);
       printf("DEBUG: Num Users: %d\n", numUsers);
       /* Function call to a list init function should go here */
+      userListInit(list, numUsers, userFD);
    }
 
    return userFD;
@@ -37,7 +39,18 @@ int fileSetup(User **list, int numUsers) {
  */
 
 int userListInit(User **list, int numUsers, int userFD) {
-   
+   list = malloc(sizeof(User *) * numUsers);
+   User *userBuff;
+   int ndx;
+
+   for (ndx = 0; ndx < numUsers; ndx++) {
+      userBuff = list[ndx] = malloc(sizeof(User));
+
+      read(userFD, userBuff->name, MAX_NAME_LENGTH);
+      userBuff->hash = malloc(SHA_DIGEST_LENGTH);
+      read(userFD, userBuff->hash, SHA_DIGEST_LENGTH);
+      read(userFD, &(userBuff->id), 1);
+   }
 }
 
 void handleUser(User **list, int numUsers) {
@@ -48,6 +61,7 @@ void handleUser(User **list, int numUsers) {
    fgets(nameBuffer, MAX_NAME_LENGTH, stdin);
    unNewLine(nameBuffer);
    printf("User: %s\n", nameBuffer);
+
    if (findUser(nameBuffer, list, numUsers))
       printf("Prompt for password now\n"); // Filler
    else
