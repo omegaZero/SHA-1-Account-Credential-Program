@@ -53,14 +53,13 @@ int userListInit(UserRegister *userReg, int userFD) {
       
    }
 
-   return ndx;    // This needs to be checked later
+   return ndx;    // This needs to be checked later, value may be wrong
 }
 
 void createAccount(UserRegister *userReg) {
    User *userBuff = (userReg->list)[userReg->numUsers] = malloc(sizeof(User));
    char passBuff[MAX_PASSWORD_LENGTH];
    char passConfirm[MAX_PASSWORD_LENGTH];
-   int number = 20; // DEBUGGING
 
    printf("Please enter an account name: ");
    scanf("%s", userBuff->name);
@@ -136,11 +135,10 @@ void *debugAddUser(char *name, unsigned char* hash, int id) {
    return tempUser;
 }
 
+/* Good for checking hex values of SHA1 hashes */
 void hex_dump(char *hash) {
    int i = 0;
 
-   while (i < SHA_DIGEST_LENGTH) {
+   while (i++ < SHA_DIGEST_LENGTH)
       printf("%x", *hash++);
-      i++;
-   }
 }
