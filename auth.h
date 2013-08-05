@@ -1,7 +1,9 @@
 /* SHA-1-Authentication
  * auth.h
  *
- * Chris Opperwall July 28, 2013
+ * Chris Opperwall 
+ * Started: July 27, 2013
+ * Last Edit: August 5, 2013
  */
 
 #include <unistd.h>
@@ -23,7 +25,7 @@
 #define fileExists() (open(PERSIST_FILE, O_RDONLY) != -1)
 
 typedef struct {
-   char name[MAX_NAME_LENGTH];          /* Username String */
-   unsigned char *hash; /* SHA-1 hash of password */
-   int id;              /* User ID number */
+   char name[MAX_NAME_LENGTH];   /* Username String */
+   unsigned char *hash;          /* SHA-1 hash of password */
+   int id;                       /* User ID number */
 } User;
