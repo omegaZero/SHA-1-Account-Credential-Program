@@ -23,7 +23,7 @@
 #define fileExists() (open(PERSIST_FILE, O_RDONLY) != -1)
 
 typedef struct {
-   char *name;          /* Username String */
+   char name[MAX_NAME_LENGTH];          /* Username String */
    unsigned char *hash; /* SHA-1 hash of password */
    int id;              /* User ID number */
 } User;
