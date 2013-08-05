@@ -32,7 +32,10 @@ int fileSetup(User **list, int numUsers) {
 }
 
 
-// TODO This is what is next on the board
+/***** 
+       Status: Believed to be functional, but need write functionality 
+       to test
+*****/
 /* Sets up list of users from opened file descriptor, looks for
  * the number of users stated at the beginning of the file
  * then returns the number of users scanned in
@@ -53,6 +56,15 @@ int userListInit(User **list, int numUsers, int userFD) {
    }
 }
 
+/* By this point, all registered users should have
+ * been read from file, and aggregated into the user
+ * list structure.
+ *
+ * handleUser will then take a user and password
+ * and attempt to login if the account exists, or 
+ * assist the user in registering a new account if
+ * it does not.
+ */ 
 void handleUser(User **list, int numUsers) {
    char nameBuffer[MAX_NAME_LENGTH];
    int ndx = 0;
