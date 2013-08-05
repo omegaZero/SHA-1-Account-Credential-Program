@@ -38,4 +38,16 @@ typedef struct {
    int maxSize;                  /* Max size of list */
 } UserRegister;
 
+int fileSetup(UserRegister *userReg);
+
+int userListInit(UserRegister *userReg, int userFD);
+
+void createAccount(UserRegister *userReg);
+
+void handleUser(UserRegister *userReg);
+
+int findUser(const char *name, UserRegister *userReg);
+
+void *debugAddUser(char *name, unsigned char* hash, int id);
+
 void hex_dump(char *hash);
