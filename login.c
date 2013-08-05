@@ -7,12 +7,12 @@
 #include "auth.h"
 
 int main() {
-   User **userList;               /* Pointer to array of User *'s */
-   int userFD;                    /* File Descriptor for persistent file */
-   int numUsers = 0;              /* number of registered users */
+   UserRegister *userReg 
+      = malloc(sizeof(UserRegister)); /* Pointer to array of User *'s */
+   int userFD;                        /* File Descriptor for persistent file */
 
-   userFD = fileSetup(&userList, numUsers);
+   userFD = fileSetup(userReg);
 
    printf(WELCOME);
-   handleUser(userList, numUsers);
+   handleUser(userReg);
 }

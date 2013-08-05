@@ -12,6 +12,8 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <openssl/sha.h>
 
 #define MAX_NAME_LENGTH 30
 #define MAX_PASSWORD_LENGTH 64
@@ -29,3 +31,9 @@ typedef struct {
    unsigned char *hash;          /* SHA-1 hash of password */
    int id;                       /* User ID number */
 } User;
+
+typedef struct {
+   User **list;                  /* List of all User objects */
+   int numUsers;                 /* Current number of users in list */
+   int maxSize;                  /* Max size of list */
+} UserRegister;
