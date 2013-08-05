@@ -56,6 +56,36 @@ int userListInit(UserRegister *userReg, int userFD) {
    return ndx;    // This needs to be checked later
 }
 
+void createAccount(UserRegister *userReg) {
+   User *userBuff = (userReg->list)[userReg->numUsers] = malloc(sizeof(User));
+   char passBuff[MAX_PASSWORD_LENGTH];
+   char passConfirm[MAX_PASSWORD_LENGTH];
+   int number = 20; // DEBUGGING
+
+   printf("Please enter an account name: ");
+   scanf("%s", userBuff->name);
+
+   do {
+      printf("Please enter a password: ");
+      scanf("%s", passBuff);
+      printf("Confirm password: ");
+      scanf("%s", passConfirm);
+   } while (strcmp(passBuff, passConfirm));
+
+   userBuff->hash = SHA1(passConfirm, strlen(passConfirm), NULL);
+   userBuff->id = userReg->numUsers++;
+
+   printf("\nStatus Report\n");
+   printf("Name: %s\n", userBuff->name);
+   printf("Hash: ");
+   hex_dump(userBuff->hash);
+   printf("\nId: %d\n", userBuff->id);
+
+   printf("Thank you for registering! Press enter to continue to log on:");
+   getchar();
+   getchar();
+}
+
 /* By this point, all registered users should have
  * been read from file, and aggregated into the user
  * list structure.
@@ -76,8 +106,11 @@ void handleUser(UserRegister *userReg) {
 
    if (findUser(nameBuffer, userReg))
       printf("Prompt for password now\n"); // Filler
-   else
-      printf("No user, prompt for creation\n"); // Filler
+   else {
+      printf("You are not a registered user,\nwould you like to register? (y/n)");
+      if (getchar() == 'y')
+         createAccount(userReg);
+   }
 }
 
 int findUser(const char *name, UserRegister *userReg) {
@@ -90,6 +123,7 @@ int findUser(const char *name, UserRegister *userReg) {
    return 0;
 }
 
+
 /* Begin Debugging Functions */
 
 void *debugAddUser(char *name, unsigned char* hash, int id) {
@@ -100,4 +134,13 @@ void *debugAddUser(char *name, unsigned char* hash, int id) {
    tempUser->id = id;
 
    return tempUser;
+}
+
+void hex_dump(char *hash) {
+   int i = 0;
+
+   while (i < SHA_DIGEST_LENGTH) {
+      printf("%x", *hash++);
+      i++;
+   }
 }

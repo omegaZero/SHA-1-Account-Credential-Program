@@ -37,3 +37,5 @@ typedef struct {
    int numUsers;                 /* Current number of users in list */
    int maxSize;                  /* Max size of list */
 } UserRegister;
+
+void hex_dump(char *hash);
