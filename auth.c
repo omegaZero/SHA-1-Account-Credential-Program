@@ -126,7 +126,7 @@ int findUser(const char *name, UserRegister *userReg) {
 
 /* Begin Debugging Functions */
 
-void *debugAddUser(char *name, unsigned char* hash, int id) {
+void *debugAddUser(char *name, unsigned char *hash, int id) {
    User *tempUser = malloc(sizeof(User));
    
    strcpy(tempUser->name, name);
