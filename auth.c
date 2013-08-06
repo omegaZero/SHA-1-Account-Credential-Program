@@ -21,9 +21,9 @@ int fileSetup(UserRegister *userReg) {
       userFD = open(PERSIST_FILE, O_RDONLY);
       read(userFD, &(userReg->numUsers), 1);
       printf("DEBUG: Num Users: %d\n", userReg->numUsers);
-      /* Function call to a list init function should go here */
-      userListInit(userReg, userFD);
    }
+   
+   userListInit(userReg, userFD);
 
    return userFD;
 }
