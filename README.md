@@ -35,5 +35,5 @@ You're gonna need that './' or else you'll be running your /bin/login
 1. Make function to implement said definitions
 1. Define how to then write to the file to save state
 1. Write functions to implement said definitions
-1. Define how to read passwords, hash and store them
-1. Implement said functionality, include it into the user account creation flow
+1. ~~Define how to read passwords, hash and store them~~
+1. ~~Implement said functionality, include it into the user account creation flow~~
