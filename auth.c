@@ -50,7 +50,6 @@ int userListInit(UserRegister *userReg, int userFD) {
       userBuff->hash = malloc(SHA_DIGEST_LENGTH);
       read(userFD, userBuff->hash, SHA_DIGEST_LENGTH);
       read(userFD, &(userBuff->id), 1);
-      
    }
 
    return ndx;    // This needs to be checked later
@@ -60,7 +59,6 @@ void createAccount(UserRegister *userReg) {
    User *userBuff = (userReg->list)[userReg->numUsers] = malloc(sizeof(User));
    char passBuff[MAX_PASSWORD_LENGTH];
    char passConfirm[MAX_PASSWORD_LENGTH];
-   int number = 20; // DEBUGGING
 
    printf("Please enter an account name: ");
    scanf("%s", userBuff->name);
