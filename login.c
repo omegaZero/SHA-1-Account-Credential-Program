@@ -11,6 +11,7 @@ int main() {
       = malloc(sizeof(UserRegister)); /* Pointer to array of User *'s */
    int userFD;                        /* File Descriptor for persistent file */
 
+   /* Creates file if none exists, opens file if does */
    userFD = fileSetup(userReg);
 
    printf(WELCOME);
