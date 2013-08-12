@@ -15,7 +15,7 @@ int fileSetup(UserRegister *userReg) {
       userFD = open(PERSIST_FILE, O_CREAT | O_WRONLY,
          S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
       
-      write(userFD, &(userReg->numUsers), 1);
+      write(userFD, &(userReg->numUsers), sizeof(int));
    }
    else {
       userFD = open(PERSIST_FILE, O_RDONLY);
