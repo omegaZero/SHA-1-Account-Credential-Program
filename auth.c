@@ -21,9 +21,9 @@ int fileSetup(UserRegister *userReg) {
       userFD = open(PERSIST_FILE, O_RDONLY);
       read(userFD, &(userReg->numUsers), 1);
       printf("DEBUG: Num Users: %d\n", userReg->numUsers);
-      /* Function call to a list init function should go here */
-      userListInit(userReg, userFD);
    }
+   
+   userListInit(userReg, userFD);
 
    return userFD;
 }
@@ -50,7 +50,6 @@ int userListInit(UserRegister *userReg, int userFD) {
       userBuff->hash = malloc(SHA_DIGEST_LENGTH);
       read(userFD, userBuff->hash, SHA_DIGEST_LENGTH);
       read(userFD, &(userBuff->id), 1);
-      
    }
 
    return ndx;    // This needs to be checked later, value may be wrong
@@ -125,7 +124,7 @@ int findUser(const char *name, UserRegister *userReg) {
 
 /* Begin Debugging Functions */
 
-void *debugAddUser(char *name, unsigned char* hash, int id) {
+void *debugAddUser(char *name, unsigned char *hash, int id) {
    User *tempUser = malloc(sizeof(User));
    
    strcpy(tempUser->name, name);
