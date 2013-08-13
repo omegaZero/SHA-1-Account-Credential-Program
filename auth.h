@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <openssl/sha.h>
 
+#ifndef AUTH_H
 #define MAX_NAME_LENGTH 30
 #define MAX_PASSWORD_LENGTH 64
 #define MAX_USERS 16
@@ -25,6 +26,7 @@
 
 #define unNewLine(n) ((n)[strlen(n) - 1] = 0)
 #define fileExists() (open(PERSIST_FILE, O_RDONLY) != -1)
+#endif
 
 typedef struct {
    char name[MAX_NAME_LENGTH];   /* Username String */
