@@ -41,6 +41,8 @@ typedef struct {
 /* Function Prototypes */
 /* Commenting to come */
 
+void sigCallBack(int signal);
+
 int fileSetup(UserRegister *userReg);
 
 int userListInit(UserRegister *userReg, int userFD);

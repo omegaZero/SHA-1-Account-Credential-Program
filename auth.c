@@ -6,6 +6,13 @@
 
 #include "auth.h"
 
+void sigCallBack(int signal) {
+   printf("\n\nUnsaved data!\nAre you sure you want to quit? (y\\n) ");
+   
+   if (getchar() == 'y')
+      exit(0);
+}
+
 int fileSetup(UserRegister *userReg) {
    int userFD;
 
