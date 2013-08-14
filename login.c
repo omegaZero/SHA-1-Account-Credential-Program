@@ -8,16 +8,17 @@
 #include "auth.h"
 
 
-int main() {
-   UserRegister *userReg 
+int main() 
+{
+   UserRegister *user_reg 
       = malloc(sizeof(UserRegister)); /* Pointer to array of User *'s */
-   int userFD;                        /* File Descriptor for persistent file */
+   int user_FD;                       /* File Descriptor for persistent file */
    
-   signal(SIGINT, sigCallBack);
+   signal(SIGINT, sig_call_back);
 
    /* Creates file if none exists, opens file if does */
-   userFD = fileSetup(userReg);
+   user_FD = file_setup(user_reg);
 
    printf(WELCOME);
-   handleUser(userReg);
+   handle_user(user_reg);
 }

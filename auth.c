@@ -6,33 +6,34 @@
 
 #include "auth.h"
 
-void sigCallBack(int signal) {
+void sig_call_back(int signal) 
+{
    printf("\n\nUnsaved data!\nAre you sure you want to quit? (y\\n) ");
    
    if (getchar() == 'y')
       exit(0);
 }
 
-int fileSetup(UserRegister *userReg) {
-   int userFD;
+int file_setup(UserRegister *user_reg) 
+{
+   int user_FD;
 
-   if (!fileExists()) {
+   if (!file_exists()) {
       printf("Creating persistent file...\n\n");
 
-      userFD = open(PERSIST_FILE, O_CREAT | O_WRONLY,
+      user_FD = open(PERSIST_FILE, O_CREAT | O_WRONLY,
          S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
       
-      write(userFD, &(userReg->numUsers), sizeof(int));
-   }
-   else {
-      userFD = open(PERSIST_FILE, O_RDONLY);
-      read(userFD, &(userReg->numUsers), 1);
-      printf("DEBUG: Num Users: %d\n", userReg->numUsers);
+      write(user_FD, &(user_reg->num_users), sizeof(int));
+   } else {
+      user_FD = open(PERSIST_FILE, O_RDONLY);
+      read(user_FD, &(user_reg->num_users), 1);
+      printf("DEBUG: Num Users: %d\n", user_reg->num_users);
    }
    
-   userListInit(userReg, userFD);
+   user_list_init(user_reg, user_FD);
 
-   return userFD;
+   return user_FD;
 }
 
 
@@ -45,50 +46,52 @@ int fileSetup(UserRegister *userReg) {
  * then returns the number of users scanned in
  */
 
-int userListInit(UserRegister *userReg, int userFD) {
-   userReg->list = malloc(sizeof(User *) * userReg->numUsers);
-   User *userBuff;
+int user_list_init(UserRegister *user_reg, int user_FD) 
+{
+   user_reg->list = malloc(sizeof(User *) * user_reg->num_users);
+   User *user_buff;
    int ndx;
 
-   for (ndx = 0; ndx < userReg->numUsers; ndx++) {
-      userBuff = (userReg->list)[ndx] = malloc(sizeof(User));
+   for (ndx = 0; ndx < user_reg->num_users; ndx++) {
+      user_buff = (user_reg->list)[ndx] = malloc(sizeof(User));
 
-      read(userFD, userBuff->name, MAX_NAME_LENGTH);
-      userBuff->hash = malloc(SHA_DIGEST_LENGTH);
-      read(userFD, userBuff->hash, SHA_DIGEST_LENGTH);
-      read(userFD, &(userBuff->id), 1);
+      read(user_FD, user_buff->name, MAX_NAME_LENGTH);
+      user_buff->hash = malloc(SHA_DIGEST_LENGTH);
+      read(user_FD, user_buff->hash, SHA_DIGEST_LENGTH);
+      read(user_FD, &(user_buff->id), 1);
    }
 
    return ndx;    // This needs to be checked later, value may be wrong
 }
 
-void createAccount(UserRegister *userReg) {
-   User *userBuff = (userReg->list)[userReg->numUsers] = malloc(sizeof(User));
-   char passBuff[MAX_PASSWORD_LENGTH];
-   char passConfirm[MAX_PASSWORD_LENGTH];
+void create_account(UserRegister *user_reg) 
+{
+   User *user_buff = (user_reg->list)[user_reg->num_users] = malloc(sizeof(User));
+   char pass_buff[MAX_PASSWORD_LENGTH];
+   char pass_confirm[MAX_PASSWORD_LENGTH];
 
    printf("Please enter an account name: ");
-   scanf("%s", userBuff->name);
+   scanf("%s", user_buff->name);
 
    do {
       printf("Please enter a password: ");
-      scanf("%s", passBuff);
+      scanf("%s", pass_buff);
       printf("Confirm password: ");
-      scanf("%s", passConfirm);
-   } while (strcmp(passBuff, passConfirm));
+      scanf("%s", pass_confirm);
+   } while (strcmp(pass_buff, pass_confirm));
 
-   userBuff->hash = SHA1(passConfirm, strlen(passConfirm), NULL);
-   userBuff->id = userReg->numUsers++;
+   user_buff->hash = SHA1(pass_confirm, strlen(pass_confirm), NULL);
+   user_buff->id = user_reg->num_users++;
 
    printf("\nStatus Report\n");
-   printf("Name: %s\n", userBuff->name);
+   printf("Name: %s\n", user_buff->name);
    printf("Hash: ");
-   hex_dump(userBuff->hash);
-   printf("\nId: %d\n", userBuff->id);
+   hex_dump(user_buff->hash);
+   printf("\nId: %d\n", user_buff->id);
 
    printf("Thank you for registering! Press enter to continue to log on:");
    getchar();
-   getchar();
+   getchar(); // Errors occur with just one getchar call.
 }
 
 /* By this point, all registered users should have
@@ -100,29 +103,31 @@ void createAccount(UserRegister *userReg) {
  * assist the user in registering a new account if
  * it does not.
  */ 
-void handleUser(UserRegister *userReg) {
-   char nameBuffer[MAX_NAME_LENGTH];
+void handle_user(UserRegister *user_reg) 
+{
+   char name_buffer[MAX_NAME_LENGTH];
    int ndx = 0;
 
    printf("Please enter your account name: ");
-   fgets(nameBuffer, MAX_NAME_LENGTH, stdin);
-   unNewLine(nameBuffer);
-   printf("User: %s\n", nameBuffer);
+   fgets(name_buffer, MAX_NAME_LENGTH, stdin);
+   un_newline(name_buffer);
+   printf("User: %s\n", name_buffer);
 
-   if (findUser(nameBuffer, userReg))
+   if (find_user(name_buffer, user_reg))
       printf("Prompt for password now\n"); // Filler
    else {
       printf("You are not a registered user,\nwould you like to register? (y/n)");
       if (getchar() == 'y')
-         createAccount(userReg);
+         create_account(user_reg);
    }
 }
 
-int findUser(const char *name, UserRegister *userReg) {
+int find_user(const char *name, UserRegister *user_reg) 
+{
    int ndx = 0;
  
-   while (ndx < userReg->numUsers)
-      if (!strcmp(((userReg->list)[ndx++])->name, name))
+   while (ndx < user_reg->num_users)
+      if (!strcmp(((user_reg->list)[ndx++])->name, name))
          return 1;
 
    return 0;
@@ -131,18 +136,20 @@ int findUser(const char *name, UserRegister *userReg) {
 
 /* Begin Debugging Functions */
 
-void *debugAddUser(char *name, unsigned char *hash, int id) {
-   User *tempUser = malloc(sizeof(User));
+void *debug_add_user(char *name, unsigned char *hash, int id) 
+{
+   User *temp_user = malloc(sizeof(User));
    
-   strcpy(tempUser->name, name);
-   tempUser->hash = hash;
-   tempUser->id = id;
+   strcpy(temp_user->name, name);
+   temp_user->hash = hash;
+   temp_user->id = id;
 
-   return tempUser;
+   return temp_user;
 }
 
 /* Good for checking hex values of SHA1 hashes */
-void hex_dump(char *hash) {
+void hex_dump(char *hash) 
+{
    int i = 0;
 
    while (i++ < SHA_DIGEST_LENGTH)
