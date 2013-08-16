@@ -45,8 +45,6 @@ int file_setup(UserRegister *user_reg)
       read(user_FD, &(user_reg->num_users), sizeof(int));
       printf("DEBUG: Num Users: %d\n", user_reg->num_users);
    }
-   
-   user_list_init(user_reg, user_FD);
 
    return user_FD;
 }
