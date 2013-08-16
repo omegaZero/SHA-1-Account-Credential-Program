@@ -12,7 +12,7 @@
  */
 void sig_call_back(int signal) 
 {
-   printf("\n\nUnsaved data!\nAre you sure you want to quit? (y\\n) ");
+   printf(WARNING);
    
    if (getchar() == 'y')
       exit(0);

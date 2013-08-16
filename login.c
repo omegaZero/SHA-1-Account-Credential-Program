@@ -18,6 +18,7 @@ int main()
 
    /* Creates file if none exists, opens file if does */
    user_FD = file_setup(user_reg);
+   user_list_init(user_reg, user_FD);
 
    printf(WELCOME);
    handle_user(user_reg);
