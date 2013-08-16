@@ -6,6 +6,10 @@
 
 #include "auth.h"
 
+/* This callback is run when a SIGINT signal is recieved
+ * It asks if you are sure you want to exit the program
+ * and possibly lose data.
+ */
 void sig_call_back(int signal) 
 {
    printf("\n\nUnsaved data!\nAre you sure you want to quit? (y\\n) ");
@@ -14,6 +18,17 @@ void sig_call_back(int signal)
       exit(0);
 }
 
+/* Handles the initial setup up of the program
+ * if there is no data file to read from, the 
+ * program makes one, and writes an int-sized value
+ * of 0 to the file. This designates the number of users
+ * 
+ * If a file already exists, it opens the file in read-only
+ * reads the first 4 bytes of the file into the num_users
+ * field of the UserRegister object.
+ *
+ * on exit: returns the file descriptor for the data file.
+ */
 int file_setup(UserRegister *user_reg) 
 {
    int user_FD;
@@ -27,7 +42,7 @@ int file_setup(UserRegister *user_reg)
       write(user_FD, &(user_reg->num_users), sizeof(int));
    } else {
       user_FD = open(PERSIST_FILE, O_RDONLY);
-      read(user_FD, &(user_reg->num_users), 1);
+      read(user_FD, &(user_reg->num_users), sizeof(int));
       printf("DEBUG: Num Users: %d\n", user_reg->num_users);
    }
    
@@ -64,6 +79,14 @@ int user_list_init(UserRegister *user_reg, int user_FD)
    return ndx;    // This needs to be checked later, value may be wrong
 }
 
+/* Creates new User object, asks for an account name
+ * prompts for password, confirms password, and then hashes
+ * and stores the new username and password hash in the new 
+ * User object.
+ *
+ * At the moment it congratulates you and exits on further
+ * key press.
+ */
 void create_account(UserRegister *user_reg) 
 {
    User *user_buff = (user_reg->list)[user_reg->num_users] = malloc(sizeof(User));
@@ -122,6 +145,12 @@ void handle_user(UserRegister *user_reg)
    }
 }
 
+/* This finds users by running through the User list
+ * in the UserRegister object. 
+ *
+ * The point of this function is to check if a user
+ * exists or not.
+ */
 int find_user(const char *name, UserRegister *user_reg) 
 {
    int ndx = 0;
@@ -147,7 +176,11 @@ void *debug_add_user(char *name, unsigned char *hash, int id)
    return temp_user;
 }
 
-/* Good for checking hex values of SHA1 hashes */
+/* Good for checking hex values of SHA1 hashes
+ * 
+ * May be flawed on Little Endian machines
+ * Seems to work fine on ARM
+ */
 void hex_dump(char *hash) 
 {
    int i = 0;
