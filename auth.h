@@ -20,7 +20,7 @@
 #define MAX_PASSWORD_LENGTH 64
 #define MAX_USERS 16
 
-#define PERSIST_FILE ".userdata\0"  /* Don't think the null is needed */
+#define PERSIST_FILE ".userdata" 
 #define WELCOME "\tThis program demonstrates account authentication through\n\
 \tmaintaining hashes of passwords\n\n"
 #define WARNING "\n\nUnsaved Data!\nAre you sure you want to quit? (y\\n) "

@@ -61,7 +61,7 @@ int file_setup(UserRegister *user_reg)
 
 int user_list_init(UserRegister *user_reg, int user_FD) 
 {
-   user_reg->list = malloc(sizeof(User *) * user_reg->num_users);
+   user_reg->list = malloc(sizeof(User *) * MAX_USERS);
    User *user_buff;
    int ndx;
 
@@ -102,17 +102,25 @@ void create_account(UserRegister *user_reg)
    } while (strcmp(pass_buff, pass_confirm));
 
    user_buff->hash = SHA1(pass_confirm, strlen(pass_confirm), NULL);
-   user_buff->id = user_reg->num_users++;
+   user_buff->id = user_reg->num_users;
 
-   printf("\nStatus Report\n");
-   printf("Name: %s\n", user_buff->name);
-   printf("Hash: ");
-   hex_dump(user_buff->hash);
-   printf("\nId: %d\n", user_buff->id);
+   /* Add User object to UserRegister */
+   if (user_reg->num_users < MAX_USERS) {
+      (user_reg->list)[user_reg->num_users++] = user_buff;
 
-   printf("Thank you for registering! Press enter to continue to log on:");
-   getchar();
-   getchar(); // Errors occur with just one getchar call.
+      printf("\nStatus Report\n");
+      printf("Name: %s\n", user_buff->name);
+      printf("Hash: ");
+      hex_dump(user_buff->hash);
+      printf("\nId: %d\n", user_buff->id);
+
+      printf("Thank you for registering! Press enter to continue to log on:");
+      getchar();
+      getchar(); // Errors occur with just one getchar call.
+   } else {
+      printf("Oh no! The max numbers of users has been exceeded\n");
+      exit(1);
+   }
 }
 
 /* By this point, all registered users should have
@@ -137,7 +145,7 @@ void handle_user(UserRegister *user_reg)
    if (find_user(name_buffer, user_reg))
       printf("Prompt for password now\n"); // Filler
    else {
-      printf("You are not a registered user,\nwould you like to register? (y/n)");
+      printf("You are not a registered user,\nwould you like to register? (y/n) ");
       if (getchar() == 'y')
          create_account(user_reg);
    }
@@ -159,7 +167,6 @@ int find_user(const char *name, UserRegister *user_reg)
 
    return 0;
 }
-
 
 /* Begin Debugging Functions */
 

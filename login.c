@@ -12,7 +12,7 @@ int main()
 {
    UserRegister *user_reg 
       = malloc(sizeof(UserRegister)); /* Pointer to array of User *'s */
-   int user_FD;                       /* File Descriptor for persistent file */
+   int user_FD;                       /* File Descriptor for user file */
    
    signal(SIGINT, sig_call_back);
 
