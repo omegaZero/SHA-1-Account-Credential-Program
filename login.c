@@ -22,4 +22,6 @@ int main()
 
    printf(WELCOME);
    handle_user(user_reg);
+
+   write_to_file(user_reg);
 }
