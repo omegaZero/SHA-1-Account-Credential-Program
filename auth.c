@@ -65,9 +65,10 @@ void write_to_file(UserRegister *user_reg)
    User *user;
 
    write(FD, &(user_reg->num_users), sizeof(int));
-   
+   printf("DEBUG: Num Users on write: %d\n", user_reg->num_users);  
    for (ndx = 0; ndx < user_reg->num_users; ndx++) {
       user = *list++;
+      printf("DEBUG: Writing %s\n", user->name);
       write(FD, user->name, MAX_NAME_LENGTH);
       write(FD, user->hash, SHA_DIGEST_LENGTH);
       write(FD, &(user->id), sizeof(int));
@@ -95,7 +96,7 @@ int user_list_init(UserRegister *user_reg, int user_FD)
       read(user_FD, user_buff->name, MAX_NAME_LENGTH);
       user_buff->hash = malloc(SHA_DIGEST_LENGTH);
       read(user_FD, user_buff->hash, SHA_DIGEST_LENGTH);
-      read(user_FD, &(user_buff->id), 1);
+      read(user_FD, &(user_buff->id), sizeof(int));
    }
 
    return ndx;    // This needs to be checked later, value may be wrong
@@ -185,9 +186,11 @@ int find_user(const char *name, UserRegister *user_reg)
 {
    int ndx = 0;
  
-   while (ndx < user_reg->num_users)
+   while (ndx < user_reg->num_users) {
+      printf("DEBUG: User %d: %s\n", ndx, ((user_reg->list)[ndx])->name);
       if (!strcmp(((user_reg->list)[ndx++])->name, name))
          return 1;
+   }
 
    return 0;
 }
