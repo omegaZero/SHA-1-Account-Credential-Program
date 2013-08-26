@@ -61,14 +61,13 @@ void write_to_file(UserRegister *user_reg)
 {
    int FD = open(PERSIST_FILE, O_WRONLY | O_TRUNC);
    int ndx;
-   User user;
+   User **list = user_reg->list;
+   User *user;
 
-   write(user_FD, &(user_reg->num_users), sizeof(int));
+   write(FD, &(user_reg->num_users), sizeof(int));
    
    for (ndx = 0; ndx < user_reg->num_users; ndx++) {
-      // TODO This might be destructive. Double check before you run
-      // Parentheses may not be necessary due to operator precedence
-      user = *(user_reg->list)++;
+      user = *list++;
       write(FD, user->name, MAX_NAME_LENGTH);
       write(FD, user->hash, SHA_DIGEST_LENGTH);
       write(FD, &(user->id), sizeof(int));
