@@ -110,6 +110,8 @@ int user_list_init(UserRegister *user_reg, int user_FD)
  * At the moment it congratulates you and exits on further
  * key press.
  */
+
+ // TODO change scanf to fgets for security reasons
 void create_account(UserRegister *user_reg) 
 {
    User *user_buff = (user_reg->list)[user_reg->num_users] = malloc(sizeof(User));
@@ -121,9 +123,11 @@ void create_account(UserRegister *user_reg)
 
    do {
       printf("Please enter a password: ");
-      scanf("%s", pass_buff);
+      fgets(pass_buff, MAX_PASSWORD_LENGTH, stdin);
+      un_newline(pass_buff);
       printf("Confirm password: ");
-      scanf("%s", pass_confirm);
+      fgets(pass_confirm, MAX_PASSWORD_LENGTH, stdin);
+      un_newline(pass_confirm);
    } while (strcmp(pass_buff, pass_confirm));
 
    user_buff->hash = SHA1(pass_confirm, strlen(pass_confirm), NULL);
@@ -160,6 +164,7 @@ void create_account(UserRegister *user_reg)
 void handle_user(UserRegister *user_reg) 
 {
    char name_buffer[MAX_NAME_LENGTH];
+   char pass_buffer[MAX_PASSWORD_LENGTH];
    int ndx = 0;
 
    printf("Please enter your account name: ");
@@ -168,7 +173,7 @@ void handle_user(UserRegister *user_reg)
    printf("User: %s\n", name_buffer);
 
    if (find_user(name_buffer, user_reg))
-      printf("Prompt for password now\n"); // Filler
+      printf("Prompt for Password\n");
    else {
       printf("You are not a registered user,\nwould you like to register? (y/n) ");
       if (getchar() == 'y')
