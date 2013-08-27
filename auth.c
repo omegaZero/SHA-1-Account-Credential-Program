@@ -116,12 +116,12 @@ void create_account(UserRegister *user_reg)
    char pass_confirm[MAX_PASSWORD_LENGTH];
 
    do {
-      if (find_user(user_buff->name, user_reg))
+      if (find_user(user_buff->name, user_reg) >= 0)
          printf("Sorry, that account has already been registered.\n\n");
       printf("Please enter an account name: ");
       fgets(user_buff->name, MAX_NAME_LENGTH, stdin);
       un_newline(user_buff->name);
-   } while (find_user(user_buff->name, user_reg));
+   } while (find_user(user_buff->name, user_reg) >= 0);
 
    do {
       printf("Please enter a password: ");
@@ -167,15 +167,17 @@ void handle_user(UserRegister *user_reg)
    char name_buffer[MAX_NAME_LENGTH];
    char pass_buffer[MAX_PASSWORD_LENGTH];
    int ndx = 0;
+   int userID = 0;
 
    printf("Please enter your account name: ");
    fgets(name_buffer, MAX_NAME_LENGTH, stdin);
    un_newline(name_buffer);
 
-   if (find_user(name_buffer, user_reg))
-      printf("Prompt for Password\n");
+   if ((userID = find_user(name_buffer, user_reg)) >= 0)
+      authenticate((user_reg->list)[userID]);
    else {
       printf("You are not a registered user,\nwould you like to register? (y/n) ");
+
       if (getchar() == 'y') {
          getchar(); // Clears the newline after y
          create_account(user_reg);
@@ -183,11 +185,35 @@ void handle_user(UserRegister *user_reg)
    }
 }
 
+void authenticate(User *user)
+{
+   char password_buff[MAX_PASSWORD_LENGTH];
+   char *password_hash;
+
+   printf("Passphrase: ");
+   fgets(password_buff, MAX_PASSWORD_LENGTH, stdin);
+   un_newline(password_buff);
+   
+   password_hash = SHA1(password_buff, strlen(password_buff), NULL);
+
+   if (!memcmp(password_hash, user->hash, SHA_DIGEST_LENGTH))
+      printf("Hooray! You're authenticated!\n\n");
+   else
+      printf("Sorry, incorrect passphrase\n");
+}
+
 /* This finds users by running through the User list
  * in the UserRegister object. 
  *
  * The point of this function is to check if a user
  * exists or not.
+ * 
+ * UPDATE: AUG 26
+ * This function now returns the id of the found user
+ * the equivalent of a false is now a negative one
+ * This helps determine which user is trying to authenticate
+ * instead of having to created a separate function to
+ * determine which name matches which User
  */
 int find_user(const char *name, UserRegister *user_reg) 
 {
@@ -195,10 +221,10 @@ int find_user(const char *name, UserRegister *user_reg)
  
    while (ndx < user_reg->num_users) {
       if (!strcmp(((user_reg->list)[ndx++])->name, name))
-         return 1;
+         return ndx - 1;
    }
 
-   return 0;
+   return -1;
 }
 
 /* Begin Debugging Functions */

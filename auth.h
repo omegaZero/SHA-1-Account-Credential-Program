@@ -44,6 +44,8 @@ typedef struct {
 /* Function Prototypes */
 /* Commenting to come */
 
+void authenticate(User *user);
+
 void sig_call_back(int signal);
 
 int file_setup(UserRegister *user_reg);
