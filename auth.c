@@ -119,7 +119,8 @@ void create_account(UserRegister *user_reg)
    char pass_confirm[MAX_PASSWORD_LENGTH];
 
    printf("Please enter an account name: ");
-   scanf("%s", user_buff->name);
+   fgets(user_buff->name, MAX_NAME_LENGTH, stdin);
+   un_newline(user_buff->name);
 
    do {
       printf("Please enter a password: ");
@@ -145,7 +146,6 @@ void create_account(UserRegister *user_reg)
 
       printf("Thank you for registering! Press enter to continue to log on:");
       getchar();
-      getchar(); // Errors occur with just one getchar call.
    } else {
       printf("Oh no! The max numbers of users has been exceeded\n");
       exit(1);
@@ -176,8 +176,10 @@ void handle_user(UserRegister *user_reg)
       printf("Prompt for Password\n");
    else {
       printf("You are not a registered user,\nwould you like to register? (y/n) ");
-      if (getchar() == 'y')
+      if (getchar() == 'y') {
+         getchar(); // Clears the newline after y
          create_account(user_reg);
+      }
    }
 }
 
