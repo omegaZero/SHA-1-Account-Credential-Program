@@ -43,7 +43,6 @@ int file_setup(UserRegister *user_reg)
    } else {
       user_FD = open(PERSIST_FILE, O_RDONLY);
       read(user_FD, &(user_reg->num_users), sizeof(int));
-      printf("DEBUG: Num Users: %d\n", user_reg->num_users);
    }
 
    return user_FD;
@@ -65,10 +64,8 @@ void write_to_file(UserRegister *user_reg)
    User *user;
 
    write(FD, &(user_reg->num_users), sizeof(int));
-   printf("DEBUG: Num Users on write: %d\n", user_reg->num_users);  
    for (ndx = 0; ndx < user_reg->num_users; ndx++) {
       user = *list++;
-      printf("DEBUG: Writing %s\n", user->name);
       write(FD, user->name, MAX_NAME_LENGTH);
       write(FD, user->hash, SHA_DIGEST_LENGTH);
       write(FD, &(user->id), sizeof(int));
@@ -118,9 +115,13 @@ void create_account(UserRegister *user_reg)
    char pass_buff[MAX_PASSWORD_LENGTH];
    char pass_confirm[MAX_PASSWORD_LENGTH];
 
-   printf("Please enter an account name: ");
-   fgets(user_buff->name, MAX_NAME_LENGTH, stdin);
-   un_newline(user_buff->name);
+   do {
+      if (find_user(user_buff->name, user_reg))
+         printf("Sorry, that account has already been registered.\n\n");
+      printf("Please enter an account name: ");
+      fgets(user_buff->name, MAX_NAME_LENGTH, stdin);
+      un_newline(user_buff->name);
+   } while (find_user(user_buff->name, user_reg));
 
    do {
       printf("Please enter a password: ");
@@ -170,7 +171,6 @@ void handle_user(UserRegister *user_reg)
    printf("Please enter your account name: ");
    fgets(name_buffer, MAX_NAME_LENGTH, stdin);
    un_newline(name_buffer);
-   printf("User: %s\n", name_buffer);
 
    if (find_user(name_buffer, user_reg))
       printf("Prompt for Password\n");
@@ -194,7 +194,6 @@ int find_user(const char *name, UserRegister *user_reg)
    int ndx = 0;
  
    while (ndx < user_reg->num_users) {
-      printf("DEBUG: User %d: %s\n", ndx, ((user_reg->list)[ndx])->name);
       if (!strcmp(((user_reg->list)[ndx++])->name, name))
          return 1;
    }
