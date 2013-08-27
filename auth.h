@@ -48,6 +48,8 @@ void authenticate(User *user);
 
 void sig_call_back(int signal);
 
+void write_to_file(UserRegister *user_reg);
+
 int file_setup(UserRegister *user_reg);
 
 int user_list_init(UserRegister *user_reg, int userFD);

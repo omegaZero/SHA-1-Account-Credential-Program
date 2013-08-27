@@ -72,10 +72,6 @@ void write_to_file(UserRegister *user_reg)
    }
 }
 
-/***** 
-       Status: Believed to be functional, but need write functionality 
-       to test
-*****/
 /* Sets up list of users from opened file descriptor, looks for
  * the number of users stated at the beginning of the file
  * then returns the number of users scanned in
@@ -96,7 +92,7 @@ int user_list_init(UserRegister *user_reg, int user_FD)
       read(user_FD, &(user_buff->id), sizeof(int));
    }
 
-   return ndx;    // This needs to be checked later, value may be wrong
+   return ndx;    /* This needs to be checked later, value may be wrong */
 }
 
 /* Creates new User object, asks for an account name
@@ -107,8 +103,6 @@ int user_list_init(UserRegister *user_reg, int user_FD)
  * At the moment it congratulates you and exits on further
  * key press.
  */
-
- // TODO change scanf to fgets for security reasons
 void create_account(UserRegister *user_reg) 
 {
    User *user_buff = (user_reg->list)[user_reg->num_users] = malloc(sizeof(User));
@@ -165,8 +159,6 @@ void create_account(UserRegister *user_reg)
 void handle_user(UserRegister *user_reg) 
 {
    char name_buffer[MAX_NAME_LENGTH];
-   char pass_buffer[MAX_PASSWORD_LENGTH];
-   int ndx = 0;
    int userID = 0;
 
    printf("Please enter your account name: ");
@@ -179,7 +171,7 @@ void handle_user(UserRegister *user_reg)
       printf("You are not a registered user,\nwould you like to register? (y/n) ");
 
       if (getchar() == 'y') {
-         getchar(); // Clears the newline after y
+         getchar(); /* Clears the newline after y */
          create_account(user_reg);
       }
    }
@@ -219,10 +211,9 @@ int find_user(const char *name, UserRegister *user_reg)
 {
    int ndx = 0;
  
-   while (ndx < user_reg->num_users) {
+   while (ndx < user_reg->num_users)
       if (!strcmp(((user_reg->list)[ndx++])->name, name))
          return ndx - 1;
-   }
 
    return -1;
 }
