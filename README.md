@@ -31,9 +31,9 @@ You're gonna need that './' or else you'll be running your /bin/login
 (I know, it's a terrible name for an executable, I'll change it when I think of something better)
 
 ## Current goals
-1. Define how to read from binary file (User creation and reading elements from file)
-1. Make function to implement said definitions
-1. Define how to then write to the file to save state
-1. Write functions to implement said definitions
+1. ~~Define how to read from binary file (User creation and reading elements from file)~~
+1. ~~Make function to implement said definitions~~
+1. ~~Define how to then write to the file to save state~~
+1. ~~Write functions to implement said definitions~~
 1. ~~Define how to read passwords, hash and store them~~
 1. ~~Implement said functionality, include it into the user account creation flow~~
