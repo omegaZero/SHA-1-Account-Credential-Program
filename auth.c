@@ -6,84 +6,145 @@
 
 #include "auth.h"
 
-int fileSetup(UserRegister *userReg) {
-   int userFD;
-
-   if (!fileExists()) {
-      printf("Creating persistent file...\n\n");
-
-      userFD = open(PERSIST_FILE, O_CREAT | O_WRONLY,
-         S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
-
-      userReg->numUsers = 0;
-
-      write(userFD, &(userReg->numUsers), sizeof(int));
-   }
-   else {
-      userFD = open(PERSIST_FILE, O_RDONLY);
-      read(userFD, &(userReg->numUsers), sizeof(int));
-      printf("DEBUG: Num Users: %d\n", userReg->numUsers);
-   }
+/* This callback is run when a SIGINT signal is recieved
+ * It asks if you are sure you want to exit the program
+ * and possibly lose data.
+ */
+void sig_call_back(int signal) 
+{
+   printf(WARNING);
    
-   userListInit(userReg, userFD);
-
-   return userFD;
+   if (getchar() == 'y')
+      exit(0);
 }
 
+/* Handles the initial setup up of the program
+ * if there is no data file to read from, the 
+ * program makes one, and writes an int-sized value
+ * of 0 to the file. This designates the number of users
+ * 
+ * If a file already exists, it opens the file in read-only
+ * reads the first 4 bytes of the file into the num_users
+ * field of the UserRegister object.
+ *
+ * on exit: returns the file descriptor for the data file.
+ */
+int file_setup(UserRegister *user_reg) 
+{
+   int user_FD;
 
-/***** 
-       Status: Believed to be functional, but need write functionality 
-       to test
-*****/
+   if (!file_exists()) {
+      printf("Creating persistent file...\n\n");
+
+      user_FD = open(PERSIST_FILE, O_CREAT | O_WRONLY,
+         S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+      
+      write(user_FD, &(user_reg->num_users), sizeof(int));
+   } else {
+      user_FD = open(PERSIST_FILE, O_RDONLY);
+      read(user_FD, &(user_reg->num_users), sizeof(int));
+   }
+
+   return user_FD;
+}
+
+/* Procedure:
+ *
+ * Open binary file as write-only (WR_ONLY) (O_TRUNC?)
+ * write num_users int to file
+ * for num_users, loop through userReg
+ * and write each field
+ * Then close file
+ */
+void write_to_file(UserRegister *user_reg)
+{
+   int FD = open(PERSIST_FILE, O_WRONLY | O_TRUNC);
+   int ndx;
+   User **list = user_reg->list;
+   User *user;
+
+   write(FD, &(user_reg->num_users), sizeof(int));
+   for (ndx = 0; ndx < user_reg->num_users; ndx++) {
+      user = *list++;
+      write(FD, user->name, MAX_NAME_LENGTH);
+      write(FD, user->hash, SHA_DIGEST_LENGTH);
+      write(FD, &(user->id), sizeof(int));
+   }
+}
+
 /* Sets up list of users from opened file descriptor, looks for
  * the number of users stated at the beginning of the file
  * then returns the number of users scanned in
  */
 
-int userListInit(UserRegister *userReg, int userFD) {
-   userReg->list = malloc(sizeof(User *) * userReg->numUsers);
-   User *userBuff;
+int user_list_init(UserRegister *user_reg, int user_FD) 
+{
+   user_reg->list = malloc(sizeof(User *) * MAX_USERS);
+   User *user_buff;
    int ndx;
 
-   for (ndx = 0; ndx < userReg->numUsers; ndx++) {
-      userBuff = (userReg->list)[ndx] = malloc(sizeof(User));
+   for (ndx = 0; ndx < user_reg->num_users; ndx++) {
+      user_buff = (user_reg->list)[ndx] = malloc(sizeof(User));
 
-      read(userFD, userBuff->name, MAX_NAME_LENGTH);
-      userBuff->hash = malloc(SHA_DIGEST_LENGTH);
-      read(userFD, userBuff->hash, SHA_DIGEST_LENGTH);
-      read(userFD, &(userBuff->id), 1);
+      read(user_FD, user_buff->name, MAX_NAME_LENGTH);
+      user_buff->hash = malloc(SHA_DIGEST_LENGTH);
+      read(user_FD, user_buff->hash, SHA_DIGEST_LENGTH);
+      read(user_FD, &(user_buff->id), sizeof(int));
    }
 
-   return ndx;    // This needs to be checked later, value may be wrong
+   return ndx;    /* This needs to be checked later, value may be wrong */
 }
 
-void createAccount(UserRegister *userReg) {
-   User *userBuff = (userReg->list)[userReg->numUsers] = malloc(sizeof(User));
-   char passBuff[MAX_PASSWORD_LENGTH];
-   char passConfirm[MAX_PASSWORD_LENGTH];
+/* Creates new User object, asks for an account name
+ * prompts for password, confirms password, and then hashes
+ * and stores the new username and password hash in the new 
+ * User object.
+ *
+ * At the moment it congratulates you and exits on further
+ * key press.
+ */
+void create_account(UserRegister *user_reg) 
+{
+   User *user_buff = (user_reg->list)[user_reg->num_users] = malloc(sizeof(User));
+   char pass_buff[MAX_PASSWORD_LENGTH];
+   char pass_confirm[MAX_PASSWORD_LENGTH];
 
-   printf("Please enter an account name: ");
-   scanf("%s", userBuff->name);
+   do {
+      if (find_user(user_buff->name, user_reg) >= 0)
+         printf("Sorry, that account has already been registered.\n\n");
+      printf("Please enter an account name: ");
+      fgets(user_buff->name, MAX_NAME_LENGTH, stdin);
+      un_newline(user_buff->name);
+   } while (find_user(user_buff->name, user_reg) >= 0);
 
    do {
       printf("Please enter a password: ");
-      scanf("%s", passBuff);
+      fgets(pass_buff, MAX_PASSWORD_LENGTH, stdin);
+      un_newline(pass_buff);
       printf("Confirm password: ");
-      scanf("%s", passConfirm);
-   } while (strcmp(passBuff, passConfirm));
+      fgets(pass_confirm, MAX_PASSWORD_LENGTH, stdin);
+      un_newline(pass_confirm);
+   } while (strcmp(pass_buff, pass_confirm));
 
-   userBuff->hash = SHA1(passConfirm, strlen(passConfirm), NULL);
-   userBuff->id = userReg->numUsers++;
+   user_buff->hash = SHA1(pass_confirm, strlen(pass_confirm), NULL);
+   user_buff->id = user_reg->num_users;
 
-   printf("\nStatus Report\n");
-   printf("Name: %s\n", userBuff->name);
-   printf("Hash: ");
-   hex_dump(userBuff->hash);
-   printf("\nId: %d\n", userBuff->id);
+   /* Add User object to UserRegister */
+   if (user_reg->num_users < MAX_USERS) {
+      (user_reg->list)[user_reg->num_users++] = user_buff;
 
-   printf("Thank you for registering! Press enter to continue to log on:");
-   getchar();
-   getchar();
+      printf("\nStatus Report\n");
+      printf("Name: %s\n", user_buff->name);
+      printf("Hash: ");
+      hex_dump(user_buff->hash);
+      printf("\nId: %d\n", user_buff->id);
+
+      printf("Thank you for registering! Press enter to continue to log on:");
+      getchar();
+   } else {
+      printf("Oh no! The max numbers of users has been exceeded\n");
+      exit(1);
+   }
 }
 
 /* By this point, all registered users should have
@@ -95,49 +156,88 @@ void createAccount(UserRegister *userReg) {
  * assist the user in registering a new account if
  * it does not.
  */ 
-void handleUser(UserRegister *userReg) {
-   char nameBuffer[MAX_NAME_LENGTH];
-   int ndx = 0;
+void handle_user(UserRegister *user_reg) 
+{
+   char name_buffer[MAX_NAME_LENGTH];
+   int userID = 0;
 
    printf("Please enter your account name: ");
-   fgets(nameBuffer, MAX_NAME_LENGTH, stdin);
-   unNewLine(nameBuffer);
-   printf("User: %s\n", nameBuffer);
+   fgets(name_buffer, MAX_NAME_LENGTH, stdin);
+   un_newline(name_buffer);
 
-   if (findUser(nameBuffer, userReg))
-      printf("Prompt for password now\n"); // Filler
+   if ((userID = find_user(name_buffer, user_reg)) >= 0)
+      authenticate((user_reg->list)[userID]);
    else {
-      printf("You are not a registered user,\nwould you like to register? (y/n)");
-      if (getchar() == 'y')
-         createAccount(userReg);
+      printf("You are not a registered user,\nwould you like to register? (y/n) ");
+
+      if (getchar() == 'y') {
+         getchar(); /* Clears the newline after y */
+         create_account(user_reg);
+      }
    }
 }
 
-int findUser(const char *name, UserRegister *userReg) {
-   int ndx = 0;
- 
-   while (ndx < userReg->numUsers)
-      if (!strcmp(((userReg->list)[ndx++])->name, name))
-         return 1;
+void authenticate(User *user)
+{
+   char password_buff[MAX_PASSWORD_LENGTH];
+   char *password_hash;
 
-   return 0;
+   printf("Passphrase: ");
+   fgets(password_buff, MAX_PASSWORD_LENGTH, stdin);
+   un_newline(password_buff);
+   
+   password_hash = SHA1(password_buff, strlen(password_buff), NULL);
+
+   if (!memcmp(password_hash, user->hash, SHA_DIGEST_LENGTH))
+      printf("Hooray! You're authenticated!\n\n");
+   else
+      printf("Sorry, incorrect passphrase\n");
 }
 
+/* This finds users by running through the User list
+ * in the UserRegister object. 
+ *
+ * The point of this function is to check if a user
+ * exists or not.
+ * 
+ * UPDATE: AUG 26
+ * This function now returns the id of the found user
+ * the equivalent of a false is now a negative one
+ * This helps determine which user is trying to authenticate
+ * instead of having to created a separate function to
+ * determine which name matches which User
+ */
+int find_user(const char *name, UserRegister *user_reg) 
+{
+   int ndx = 0;
+ 
+   while (ndx < user_reg->num_users)
+      if (!strcmp(((user_reg->list)[ndx++])->name, name))
+         return ndx - 1;
+
+   return -1;
+}
 
 /* Begin Debugging Functions */
 
-void *debugAddUser(char *name, unsigned char *hash, int id) {
-   User *tempUser = malloc(sizeof(User));
+void *debug_add_user(char *name, unsigned char *hash, int id) 
+{
+   User *temp_user = malloc(sizeof(User));
    
-   strcpy(tempUser->name, name);
-   tempUser->hash = hash;
-   tempUser->id = id;
+   strcpy(temp_user->name, name);
+   temp_user->hash = hash;
+   temp_user->id = id;
 
-   return tempUser;
+   return temp_user;
 }
 
-/* Good for checking hex values of SHA1 hashes */
-void hex_dump(char *hash) {
+/* Good for checking hex values of SHA1 hashes
+ * 
+ * May be flawed on Little Endian machines
+ * Seems to work fine on ARM
+ */
+void hex_dump(char *hash) 
+{
    int i = 0;
 
    while (i++ < SHA_DIGEST_LENGTH)
