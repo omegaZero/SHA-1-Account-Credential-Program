@@ -4,16 +4,24 @@
  * Chris Opperwall July 28, 2013
  */
 
+#include <signal.h>
 #include "auth.h"
 
-int main() {
-   UserRegister *userReg 
+
+int main() 
+{
+   UserRegister *user_reg 
       = malloc(sizeof(UserRegister)); /* Pointer to array of User *'s */
-   int userFD;                        /* File Descriptor for persistent file */
+   int user_FD;                       /* File Descriptor for user file */
+   
+   signal(SIGINT, sig_call_back);
 
    /* Creates file if none exists, opens file if does */
-   userFD = fileSetup(userReg);
+   user_FD = file_setup(user_reg);
+   user_list_init(user_reg, user_FD);
 
    printf(WELCOME);
-   handleUser(userReg);
+   handle_user(user_reg);
+
+   write_to_file(user_reg);
 }

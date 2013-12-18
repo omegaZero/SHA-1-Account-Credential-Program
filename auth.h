@@ -15,16 +15,19 @@
 #include <stdlib.h>
 #include <openssl/sha.h>
 
+#ifndef AUTH_H
 #define MAX_NAME_LENGTH 30
 #define MAX_PASSWORD_LENGTH 64
 #define MAX_USERS 16
 
-#define PERSIST_FILE ".userdata\0"
+#define PERSIST_FILE ".userdata" 
 #define WELCOME "\tThis program demonstrates account authentication through\n\
 \tmaintaining hashes of passwords\n\n"
+#define WARNING "\n\nUnsaved Data!\nAre you sure you want to quit? (y\\n) "
 
-#define unNewLine(n) ((n)[strlen(n) - 1] = 0)
-#define fileExists() (open(PERSIST_FILE, O_RDONLY) != -1)
+#define un_newline(n) ((n)[strlen(n) - 1] = 0)
+#define file_exists() (open(PERSIST_FILE, O_RDONLY) != -1)
+#endif
 
 typedef struct {
    char name[MAX_NAME_LENGTH];   /* Username String */
@@ -34,25 +37,31 @@ typedef struct {
 
 typedef struct {
    User **list;                  /* List of all User objects */
-   int numUsers;                 /* Current number of users in list */
-   int maxSize;                  /* Max size of list */
+   int num_users;                 /* Current number of users in list */
+   int max_size;                  /* Max size of list */
 } UserRegister;
 
 /* Function Prototypes */
 /* Commenting to come */
 
-int fileSetup(UserRegister *userReg);
+void authenticate(User *user);
 
-int userListInit(UserRegister *userReg, int userFD);
+void sig_call_back(int signal);
 
-void createAccount(UserRegister *userReg);
+void write_to_file(UserRegister *user_reg);
 
-void handleUser(UserRegister *userReg);
+int file_setup(UserRegister *user_reg);
 
-int findUser(const char *name, UserRegister *userReg);
+int user_list_init(UserRegister *user_reg, int userFD);
+
+void create_account(UserRegister *user_reg);
+
+void handle_user(UserRegister *user_reg);
+
+int find_user(const char *name, UserRegister *user_reg);
 
 /* Debugging Prototypes */
 
-void *debugAddUser(char *name, unsigned char *hash, int id);
+void *debug_add_user(char *name, unsigned char *hash, int id);
 
 void hex_dump(char *hash);
