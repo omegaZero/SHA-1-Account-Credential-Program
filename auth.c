@@ -38,6 +38,8 @@ int file_setup(UserRegister *user_reg)
 
       user_FD = open(PERSIST_FILE, O_CREAT | O_WRONLY,
          S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+
+      user_reg->num_users = 0;   // I don't think this was initialized
       
       write(user_FD, &(user_reg->num_users), sizeof(int));
    } else {
